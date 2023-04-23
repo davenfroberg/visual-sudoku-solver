@@ -1,3 +1,4 @@
+from puzzle_loader import Puzzle_Loader
 class Cell:
     def __init__(self, box_id):
         self.box_id = box_id
@@ -74,10 +75,11 @@ def solve(row, column, number):
 
 
 #access board by [row][column]
+loader = Puzzle_Loader()
+puzzle = loader.load_puzzle("puzzle.png")
+
 board = create_board()
 
 create_board()
 
-solve (1,2,4)
-display_board()
 
