@@ -73,13 +73,40 @@ def solve(row, column, number):
                 if (board[i][j].box_id == board[row][column].box_id and board[i][j].number != number):
                     board[i][j].cant_be(number)
 
+#O(N^2) seems super slow for this but for now im gonna leave it
+def solved():
+    for row in board:
+        for cell in row:
+            if cell.number == 0:
+                return False
+    return True
 
 #access board by [row][column]
+
 loader = Puzzle_Loader()
 puzzle = loader.load_puzzle("puzzle.png")
 
+for row in puzzle:
+    for column in row:
+        print(column + " ", end='')
+    print()
+
 board = create_board()
 
-create_board()
+changes = -1
 
-
+while not solved():
+    while changes != 0:
+        changes = 0
+        #changes += logic_one()
+        #changes += logic_two()
+        #changes += logic_three()
+        #changes += logic_four_box()
+        #changes += logic_four_row()
+        #changes += logic_four_column()
+    if not solved():
+        print("Was unable to solve! Try implementing a guessing alogrithm instead!")
+        break
+    else:
+        print("Solved the sudoku successfuly!")
+        break
