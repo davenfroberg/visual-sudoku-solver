@@ -120,7 +120,7 @@ class Puzzle_Loader:
             for image in image_row:
                 count+=1
                 pre_processed = self.pre_process(image)
-                cell = pytesseract.image_to_string(pre_processed, lang='eng', config="-c tessedit_char_whitelist=0123456789 --psm 6")
+                cell = pytesseract.image_to_string(pre_processed, lang='osd', config="-c tessedit_char_whitelist=0123456789 --psm 10")
                 if (len(cell) == 0):
                     row.append("0")
                 else:
