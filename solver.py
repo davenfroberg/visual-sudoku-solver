@@ -10,8 +10,9 @@ class Cell:
    
     def can_be(self, number):
         return self.possible[number]
+    
     def __repr__(self):
-        return str(self.possible[4])
+        return str(self.number)
     
 #troubleshooting method that displays the board according to the __repr__ method in Cell class
 def display_board():
@@ -50,8 +51,23 @@ def create_board():
             row.append(Cell(9))
         
         sub_board.append(row)
+    
     return sub_board
 
+def load_board():
+    for y in range(0,9):
+        for x in range(0,9):
+            solve(y,x,puzzle[y][x])
+
+
+#displays the board with all of the inputted numbers
+def display_board():
+    for row in board:
+        for cell in row:
+            print(str(cell) + " ", end='')
+        print()
+
+#input (write) a solved number into the puzzle, eliminating it as a possible number for appropriate cells
 def solve(row, column, number):
     if number != 0:
         board[row][column].number = number
@@ -74,31 +90,59 @@ def solve(row, column, number):
                     board[i][j].cant_be(number)
 
 #O(N^2) seems super slow for this but for now im gonna leave it
+#check to see if the board is solved (not necessarily solved correctly, but that's redundant as the logic in the sovling algorithm is robust)
 def solved():
     for row in board:
         for cell in row:
             if cell.number == 0:
                 return False
+    
     return True
 
-#access board by [row][column]
+#return the number of possible numbers a cell can be
+def total_possible(cell):
+    possible = 0
+    for n in range (1,10):
+        if cell.can_be(n):
+            possible += 1
+    
+    return possible
+
+#return the first possible (ascending from 1-9) number a cell can be
+def find_first_possible(cell):
+    for n in range(1,10):
+        if cell.can_be(n):
+            return n
+    
+    return 0
+
+#checks for cells that only have one possible number
+def logic_one():
+    changes = 0
+    for row in range(0,9):
+        for column in range(0,9):
+            cell = board[row][column]
+            if total_possible(cell) == 1 and cell.number == 0:
+                solve(row, column, find_first_possible(cell))
+                changes += 1
+   
+    return changes
+
 
 loader = Puzzle_Loader()
 puzzle = loader.load_puzzle("puzzle.png")
 
-for row in puzzle:
-    for column in row:
-        print(column + " ", end='')
-    print()
-
+#access board with [row(y)][column(x)]
 board = create_board()
+load_board()
+
+display_board()
 
 changes = -1
-
 while not solved():
     while changes != 0:
         changes = 0
-        #changes += logic_one()
+        changes += logic_one()
         #changes += logic_two()
         #changes += logic_three()
         #changes += logic_four_box()

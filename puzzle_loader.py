@@ -122,9 +122,9 @@ class Puzzle_Loader:
                 pre_processed = self.pre_process(image)
                 cell = pytesseract.image_to_string(pre_processed, lang='osd', config="-c tessedit_char_whitelist=0123456789 --psm 10")
                 if (len(cell) == 0):
-                    row.append("0")
+                    row.append(0)
                 else:
-                    row.append(cell.strip())
+                    row.append(int(cell.strip()))
             board.append(row)
        
         print("Puzzle loaded!")
