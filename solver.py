@@ -128,6 +128,78 @@ def logic_one():
    
     return changes
 
+#checks for cells that have a possible number that no other cells in its column/row have possible
+def logic_two():
+    changes = 0
+    for y in range(9):
+        for x in range(9):
+            solveable = True
+            for n in range(1,10):
+                if board[y][x].can_be(n):
+                    for a in range(9):
+                        if a == x:
+                            continue
+                        if(board[y][a].can_be(n)):
+                            solveable = False
+                            break
+                        if a == 8:
+                            if board[y][x].number == n:
+                                break
+                            solve(y, x, n)
+                            changes += 1
+                    if not solveable:
+                        for a in range(9):
+                            if a == y:
+                                continue
+                            if board[a][x].can_be(n):
+                                solveable = False
+                                break
+                            if a == 8:
+                                if board[y][x].number == n:
+                                    break
+                                solve(y, x, n)
+                                changes += 1
+    return changes
+
+#checks for cells that have a possible number that no other cells in its box can have
+def logic_three():
+    changes = 0
+
+    for current_id in range(1,10):
+        for n in range(1,10):
+            counter = 0
+            solved = False
+            for y in range(9):
+                for x in range(9):
+                    if board[y][x].number == n and board[y][x].box_id == current_id:
+                        solved = True
+                    if board[y][x].box_id == current_id:
+                        if (board[y][x].can_be(n)):
+                            counter += 1
+            
+            if counter == 1 and not solved:
+                for y in range(9):
+                    for x in range(9):
+                        if board[y][x].box_id == current_id:
+                            if board[y][x].can_be(n):
+                                solve(y, x, n)
+                                changes += 1
+    return changes
+
+#checks for two unsolved cells in the same box that have the same only two possible numbers and setting all of the other cells in the box to have those two numbers be not possible
+def logic_four_box():
+    changes = 0
+    return changes
+
+#checks for two unsolved cells in the same row that have the same only two possible numbers and setting all of the other cells in the row to have those two numbers be not possible
+def logic_four_row():
+    changes = 0
+    return changes
+
+#checks for two unsolved cells in the same column that have the same only two possible numbers and setting all of the other cells in the column to have those two numbers be not possible
+def logic_four_column():
+    changes = 0
+    return changes
 
 loader = Puzzle_Loader()
 puzzle = loader.load_puzzle("puzzle.png")
@@ -143,11 +215,11 @@ while not solved():
     while changes != 0:
         changes = 0
         changes += logic_one()
-        #changes += logic_two()
-        #changes += logic_three()
-        #changes += logic_four_box()
-        #changes += logic_four_row()
-        #changes += logic_four_column()
+        changes += logic_two()
+        changes += logic_three()
+        changes += logic_four_box()
+        changes += logic_four_row()
+        changes += logic_four_column()
     if not solved():
         print("Was unable to solve! Try implementing a guessing alogrithm instead!")
         break
