@@ -9,6 +9,8 @@ class Puzzle_Inputter:
             for x1 in range(0, 9):
                 press(str(board[y][x1].number))
                 press('right')
+            if y == 8:
+                break
             press('down')
             for x2 in reversed(range(0,9)):
                 press(str(board[y+1][x2].number))

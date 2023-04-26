@@ -266,11 +266,59 @@ def logic_four_box():
 #checks for two unsolved cells in the same row that have the same only two possible numbers and setting all of the other cells in the row to have those two numbers be not possible
 def logic_four_row():
     changes = 0
+    first_possible = 0
+    second_possible = 0
+    possible = False
+
+    for y in range(9):
+        for x in range(9):
+            cell = board[y][x]
+            first_possible = find_first_possible(cell)
+            second_possible = find_second_possible(cell)
+            possible = False
+
+            if total_possible(cell) == 2:
+                for x2 in range(9):
+                    cell = board[y][x2]
+                    if total_possible(cell) == 2 and find_first_possible(cell) == first_possible and find_second_possible(cell) == second_possible and x2 != x:
+                        possible = True
+                if (possible):
+                    for x2 in range(9):
+                        cell = board[y][x2]
+                        if (cell.can_be(first_possible) or cell.can_be(second_possible)) and find_first_possible(cell) != first_possible and find_second_possible(cell) != second_possible:
+                            cell.cant_be(first_possible)
+                            cell.cant_be(second_possible)
+                            changes += 1
+            
     return changes
 
 #checks for two unsolved cells in the same column that have the same only two possible numbers and setting all of the other cells in the column to have those two numbers be not possible
 def logic_four_column():
     changes = 0
+    first_possible = 0
+    second_possible = 0
+    possible = False
+
+    for y in range(9):
+        for x in range(9):
+            cell = board[y][x]
+            first_possible = find_first_possible(cell)
+            second_possible = find_second_possible(cell)
+            possible = False
+
+            if total_possible(cell) == 2:
+                for y2 in range(9):
+                    cell = board[y2][x]
+                    if total_possible(cell) == 2 and find_first_possible(cell) == first_possible and find_second_possible(cell) == second_possible and y2 != y:
+                        possible = True
+                if (possible):
+                    for y2 in range(9):
+                        cell = board[y2][x]
+                        if (cell.can_be(first_possible) or cell.can_be(second_possible)) and find_first_possible(cell) != first_possible and find_second_possible(cell) != second_possible:
+                            cell.cant_be(first_possible)
+                            cell.cant_be(second_possible)
+                            changes += 1
+            
     return changes
 
 puzzle = [[]]
