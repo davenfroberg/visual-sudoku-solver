@@ -1,4 +1,7 @@
 from puzzle_loader import Puzzle_Loader
+from puzzle_inputter import Puzzle_Inputter
+
+import time
 class Cell:
     def __init__(self, box_id):
         self.box_id = box_id
@@ -140,6 +143,24 @@ def find_first_possible(cell):
     
     return 0
 
+def find_second_possible(cell):
+    first_found = False
+    for n in range(1,10):
+        if not first_found and cell.can_be(n):
+            first_found = True
+        elif first_found and cell.can_be(n):
+            return n
+    
+    return 0
+
+def total_possible(cell):
+    possible = 0
+    for n in range(1,10):
+        if cell.can_be(n):
+            possible += 1
+
+    return possible
+
 #checks for cells that only have one possible number
 def logic_one():
     changes = 0
@@ -213,6 +234,33 @@ def logic_three():
 #checks for two unsolved cells in the same box that have the same only two possible numbers and setting all of the other cells in the box to have those two numbers be not possible
 def logic_four_box():
     changes = 0
+    current_box = 0
+    first_possible = 0
+    second_possible = 0
+    possibilities = 0
+
+    for y in range(9):
+        for x in range(9):
+            cell = board[y][x]
+            current_box = board[y][x].box_id
+            first_possible = find_first_possible(cell)
+            second_possible = find_second_possible(cell)
+            possibilities = 0
+            if total_possible(cell) == 2:
+                for b in range(9):
+                    for a in range(9):
+                        cell = board[b][a]
+                        if cell.box_id == current_box and total_possible(cell) == 2 and find_first_possible(cell) == first_possible and find_second_possible(cell) == second_possible and (a != x or b != y):
+                            possibilities += 1
+                        
+                if possibilities == 1:
+                    for b in range(9):
+                        for a in range(9):
+                            cell = board[b][a]
+                            if (cell.can_be(first_possible) or cell.can_be(second_possible)) and (find_first_possible(cell) != first_possible or find_second_possible(cell) != second_possible) and cell.box_id == current_box:
+                                cell.cant_be(first_possible)
+                                cell.cant_be(second_possible)
+                                changes += 1
     return changes
 
 #checks for two unsolved cells in the same row that have the same only two possible numbers and setting all of the other cells in the row to have those two numbers be not possible
@@ -256,5 +304,9 @@ while not solved():
     else:
         print("Solved the sudoku successfuly!")
         break
-    
+
 display_board()
+
+time.sleep(2)
+puzzle_inputter = Puzzle_Inputter()
+puzzle_inputter.input_solution(board)

@@ -124,7 +124,15 @@ class Puzzle_Loader:
                 if (len(cell) == 0):
                     row.append(0)
                 else:
-                    row.append(int(cell.strip()))
+                    value = int(cell.strip())
+                    """
+                    if (value == 7):
+                        cv2.imshow("cell", pre_processed)
+                        cv2.waitKey(0)
+                        value = int(input("What number is this: "))
+                    """
+                    row.append(value)
+                    
             board.append(row)
        
         print("Puzzle loaded!")
