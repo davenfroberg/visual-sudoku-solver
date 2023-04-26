@@ -14,6 +14,30 @@ class Cell:
     def __repr__(self):
         return str(self.number)
     
+def load_puzzle_file(name):
+    puzzle = []
+    try:
+        with open(name + '.txt') as f:
+                for line in f:
+                    row = []
+                    line = line.strip()
+                    for char in line:
+                        if (char == " "):
+                            continue
+                        row.append(int(char))
+                    puzzle.append(row)
+    except FileNotFoundError:
+        with open('default.txt') as f:
+                for line in f:
+                    row = []
+                    line = line.strip()
+                    for char in line:
+                        if (char == " "):
+                            continue
+                        row.append(int(char))
+                    puzzle.append(row)
+    return puzzle
+
 #troubleshooting method that displays the board according to the __repr__ method in Cell class
 def display_board():
     for cell in board:
@@ -201,8 +225,14 @@ def logic_four_column():
     changes = 0
     return changes
 
-loader = Puzzle_Loader()
-puzzle = loader.load_puzzle("puzzle.png")
+puzzle = [[]]
+setting = input("Would you like to load the puzzle from an image (1) or file (2)?: ")
+if (setting == "1") :
+    loader = Puzzle_Loader()
+    puzzle = loader.load_puzzle("puzzle.png")
+else:
+    name = input("Input the name of the puzzle: ")
+    puzzle = load_puzzle_file(name)
 
 #access board with [row(y)][column(x)]
 board = create_board()
@@ -226,3 +256,5 @@ while not solved():
     else:
         print("Solved the sudoku successfuly!")
         break
+    
+display_board()
