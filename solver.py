@@ -17,6 +17,26 @@ class Cell:
     def __repr__(self):
         return str(self.number)
     
+class Guess:
+    def __init__(self, current_board, first_x, first_y, number):
+        sub_board = []
+        for y in range(9):
+            row = []
+            for x in range(9):
+                current_cell = current_board[y][x]
+                new_cell = Cell(current_cell.box_id)
+                new_cell.number = current_cell.number
+                for n in range (1,10):
+                    if not current_cell.can_be(n):
+                        new_cell.cant_be(n)
+                row.append(new_cell)
+            sub_board.append(row)
+
+        self.board = sub_board
+        self.guess_num = number
+        self.guess_x = first_x
+        self.guess_y = first_y
+
 def load_puzzle_file(name):
     puzzle = []
     try:
@@ -41,10 +61,6 @@ def load_puzzle_file(name):
                     puzzle.append(row)
     return puzzle
 
-#troubleshooting method that displays the board according to the __repr__ method in Cell class
-def display_board():
-    for cell in board:
-        print(cell)
 
 def create_board():
     sub_board = []
@@ -93,6 +109,7 @@ def display_board():
         for cell in row:
             print(str(cell) + " ", end='')
         print()
+    print()
 
 #input (write) a solved number into the puzzle, eliminating it as a possible number for appropriate cells
 def solve(row, column, number):
@@ -126,6 +143,23 @@ def solved():
     
     return True
 
+# this is incredibly inefficient but it only runs once at the very end of the program so the inefficiency can be justified
+# check to see if the board is actually solved correctly and has no logical errors
+def check_correct():
+    for y in range(9):
+        for x in range(9):
+            for a in range(9):
+                if (a != x and board[y][a].number == board[y][x].number):
+                    return False
+                elif (a != y and board[a][x].number == board[y][x].number):
+                    return False
+                
+            for b in range(9):
+                for a in range(9):
+                    if board[b][a].box_id == board[y][x].box_id and (a != x or b != y) and board[b][a].number == board[y][x].number:
+                        return False
+    return True
+
 #return the number of possible numbers a cell can be
 def total_possible(cell):
     possible = 0
@@ -143,6 +177,7 @@ def find_first_possible(cell):
     
     return 0
 
+#returns the second possible (ascending from 1-9) number a cell can be
 def find_second_possible(cell):
     first_found = False
     for n in range(1,10):
@@ -153,6 +188,7 @@ def find_second_possible(cell):
     
     return 0
 
+#returns the amount of possible numbers a cell has
 def total_possible(cell):
     possible = 0
     for n in range(1,10):
@@ -160,6 +196,14 @@ def total_possible(cell):
             possible += 1
 
     return possible
+
+# returns the coords (x,y) of the first cell pos that has no solved number in it (0), if all are solved, then return (-1, -1)
+def first_empty():
+    for y in range(9):
+        for x in range(9):
+            if board[y][x].number == 0:
+                return (x, y)
+    return (-1, -1)
 
 #checks for cells that only have one possible number
 def logic_one():
@@ -321,7 +365,26 @@ def logic_four_column():
             
     return changes
 
+# reverts the board to the state before the most recent guess and set the cell that was guessed on to not have the guessed number be possible
+def revert(state_counter):
+    temp_board = board_states[state_counter].board
+    for y in range(9):
+        for x in range(9):
+            temp_cell = temp_board[y][x]
+            board[y][x] = Cell(temp_cell.box_id)
+            board[y][x].number = temp_cell.number
+            for n in range(1, 10):
+                if not temp_cell.can_be(n):
+                    board[y][x].cant_be(n)
+
+    board_state = board_states[state_counter]
+    board[board_state.guess_y][board_state.guess_x].cant_be(board_state.guess_num)
+    return state_counter - 1
+
 puzzle = [[]]
+board_states = []
+state_counter = -1
+
 setting = input("Would you like to load the puzzle from an image (1) or file (2)?: ")
 if (setting == "1") :
     loader = Puzzle_Loader()
@@ -346,15 +409,36 @@ while not solved():
         changes += logic_four_box()
         changes += logic_four_row()
         changes += logic_four_column()
+    
+    #guessing algorithm
     if not solved():
-        print("Was unable to solve! Try implementing a guessing alogrithm instead!")
-        break
-    else:
-        print("Solved the sudoku successfuly!")
-        break
+        first_empty_cell = first_empty()
+        first_x = first_empty_cell[0]
+        first_y = first_empty_cell[1]
+        
+        display_board()
 
+        while (total_possible(board[first_y][first_x]) == 0):
+            state_counter = revert(state_counter)
+        
+        state_counter += 1
+
+        first_possible = find_first_possible(board[first_y][first_x])
+        if state_counter < len(board_states):
+            board_states[state_counter] = Guess(board, first_x, first_y, first_possible)
+        else:
+            board_states.append(Guess(board, first_x, first_y, first_possible))
+
+        solve(first_y, first_x, first_possible)
+
+print(str(state_counter))
 display_board()
+
+if check_correct():
+    print("The Sudoku has been solved successfully!")
+else:
+    print ("ERROR: Sudoku has not been solved correctly") #this should NEVER happen if the logic algorithms are correct
 
 time.sleep(2)
 puzzle_inputter = Puzzle_Inputter()
-puzzle_inputter.input_solution(board)
+puzzle_inputter.input_solution(board) #comment out this line if you don't want the answers to be inputted automatically
