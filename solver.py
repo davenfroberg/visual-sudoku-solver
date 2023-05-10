@@ -431,7 +431,6 @@ while not solved():
 
         solve(first_y, first_x, first_possible)
 
-print(str(state_counter))
 display_board()
 
 if check_correct():
