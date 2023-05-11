@@ -37,6 +37,7 @@ class Guess:
         self.guess_x = first_x
         self.guess_y = first_y
 
+#load the puzzle from a file
 def load_puzzle_file(name):
     puzzle = []
     try:
@@ -97,6 +98,7 @@ def create_board():
     
     return sub_board
 
+#input the numbers from the loaded puzzle into the board
 def load_board():
     for y in range(0,9):
         for x in range(0,9):
@@ -133,7 +135,6 @@ def solve(row, column, number):
                 if (board[i][j].box_id == board[row][column].box_id and board[i][j].number != number):
                     board[i][j].cant_be(number)
 
-#O(N^2) seems super slow for this but for now im gonna leave it
 #check to see if the board is solved (not necessarily solved correctly, but that's redundant as the logic in the sovling algorithm is robust)
 def solved():
     for row in board:
@@ -416,15 +417,13 @@ while not solved():
         first_x = first_empty_cell[0]
         first_y = first_empty_cell[1]
         
-        display_board()
-
         while (total_possible(board[first_y][first_x]) == 0):
             state_counter = revert(state_counter)
         
         state_counter += 1
 
         first_possible = find_first_possible(board[first_y][first_x])
-        if state_counter < len(board_states):
+        if state_counter < len(board_states) and len(board_states) != 0:
             board_states[state_counter] = Guess(board, first_x, first_y, first_possible)
         else:
             board_states.append(Guess(board, first_x, first_y, first_possible))

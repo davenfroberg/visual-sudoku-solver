@@ -1,6 +1,7 @@
 import pytesseract
 import cv2
 import numpy as np
+import copy
 
 class Puzzle_Loader: 
     CELL_CUTOFF_PERCENTAGE = 0.05 # percentage of cell size that should be cut off from top and left sides of cell image to prevent borders from being in image
@@ -60,28 +61,43 @@ class Puzzle_Loader:
         bottom = -1
         left = -1
         right = -1
-        prev = self.board_image[0,5]
+
+        offset = int(self.height / 18) #approx "center" of the cell, doesn't have to be exact at all, just somewhere away from the edge of the cell
+        prev = self.board_image[1,offset]
+
+        #dup = copy.copy(self.board_image)
+        
         i = 1
         while i <= self.height:
-            if (top == -1 and not self.compare(prev, self.board_image[i, 5])):
+            #dup[i,offset] = [0, 255, 0]
+            #cv2.imshow("dup", dup)
+            #cv2.waitKey(0)
+            if (top == -1 and not self.compare(prev, self.board_image[i, offset])):
+                #print("Found top border at: " + str(i))
                 top = i
-                i+=1
-            elif (not self.compare(prev, self.board_image[i,5])):
+                i+=offset
+            elif (not self.compare(prev, self.board_image[i,offset])):
+                #print("Found bottom border at: " + str(i))
                 bottom = i-1
                 break
-            prev = self.board_image[i,5]
+            prev = self.board_image[i,offset]
             i+=1
 
-        prev = self.board_image[5,0]
+        prev = self.board_image[offset,1]
         i = 1
         while i <= self.width:
-            if (left == -1 and not self.compare(prev, self.board_image[5,i])):
+            #dup[offset,i] = [0, 255, 0]
+            #cv2.imshow("dup", dup)
+            #cv2.waitKey(0)
+            if (left == -1 and not self.compare(prev, self.board_image[offset,i])):
+                #print("Found left border at: " + str(i))
                 left = i
-                i+=1
-            elif (not self.compare(prev, self.board_image[5,i])):
+                i+=offset
+            elif (not self.compare(prev, self.board_image[offset,i])):
+                #print("Found right border at: " + str(i))
                 right = i-1
                 break
-            prev = self.board_image[5,i]
+            prev = self.board_image[offset,i]
             i+=1
 
         self.cell_height = bottom - top
@@ -118,19 +134,25 @@ class Puzzle_Loader:
         for image_row in cell_images:
             row = []
             for image in image_row:
+                #cv2.imshow("image", image)
+                #cv2.waitKey(0)
                 count+=1
                 pre_processed = self.pre_process(image)
+                #cv2.imshow("pre_processed", pre_processed)
+                #cv2.waitKey(0)
                 cell = pytesseract.image_to_string(pre_processed, lang='osd', config="-c tessedit_char_whitelist=0123456789 --psm 10")
                 if (len(cell) == 0):
                     row.append(0)
                 else:
                     value = int(cell.strip())
-                    """
+                
+                    #this is my current, SUPER non-elegant solution to the OCR incorrectly detecting a 1 as a 7, will fix OCR Later
                     if (value == 7):
                         cv2.imshow("cell", pre_processed)
                         cv2.waitKey(0)
                         value = int(input("What number is this: "))
-                    """
+                    
+                    print(str(value))
                     row.append(value)
                     
             board.append(row)
