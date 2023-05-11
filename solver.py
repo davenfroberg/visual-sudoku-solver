@@ -439,4 +439,4 @@ else:
 
 time.sleep(2)
 puzzle_inputter = Puzzle_Inputter()
-puzzle_inputter.input_solution(board) #comment out this line if you don't want the answers to be inputted automatically
+#puzzle_inputter.input_solution(board) #comment out this line if you don't want the answers to be inputted automatically
