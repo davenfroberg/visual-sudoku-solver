@@ -62,7 +62,9 @@ class Puzzle_Loader:
         left = -1
         right = -1
 
-        offset = int(self.height / 18) #approx "center" of the cell, doesn't have to be exact at all, just somewhere away from the edge of the cell
+       #offset = int(self.height / 18) #approx "center" of the cell, doesn't have to be exact at all, just somewhere away from the edge of the cell
+        offset = int(self.width / 88)
+
         prev = self.board_image[1,offset]
 
         #dup = copy.copy(self.board_image)
@@ -126,16 +128,17 @@ class Puzzle_Loader:
 
     def load_puzzle(self, puzzle_name):
         print("Loading puzzle from image! Please wait...")
+
         self.board_image = self.crop_board(cv2.imread(puzzle_name))
         self.get_cell_info()
         cell_images = self.get_all_cells_as_images()
+
         board = []
         count = 0
+
         for image_row in cell_images:
             row = []
             for image in image_row:
-                #cv2.imshow("image", image)
-                #cv2.waitKey(0)
                 count+=1
                 pre_processed = self.pre_process(image)
                 #cv2.imshow("pre_processed", pre_processed)
@@ -148,7 +151,7 @@ class Puzzle_Loader:
                 
                     #this is my current, SUPER non-elegant solution to the OCR incorrectly detecting a 1 as a 7, will fix OCR Later
                     if (value == 7):
-                        cv2.imshow("cell", pre_processed)
+                        cv2.imshow("Clarification Needed", pre_processed)
                         cv2.waitKey(0)
                         value = int(input("What number is this: "))
                     
@@ -160,6 +163,7 @@ class Puzzle_Loader:
         print("Puzzle loaded!")
         return board
 
+#pre-process image of number for OCR
     def pre_process(self, img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (3,3), 0)
