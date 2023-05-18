@@ -386,7 +386,7 @@ puzzle = [[]]
 board_states = []
 state_counter = -1
 
-setting = input("Would you like to load the puzzle from an image (1) or file (2)?: ")
+setting = input("Would you like to load the puzzle from an image (1) or text file (2)?: ")
 if (setting == "1") :
     loader = Puzzle_Loader()
     puzzle = loader.load_puzzle("puzzle.png")
@@ -435,8 +435,8 @@ display_board()
 if check_correct():
     print("The Sudoku has been solved successfully!")
 else:
-    print ("ERROR: Sudoku has not been solved correctly") #this should NEVER happen if the logic algorithms are correct
+    print ("ERROR: Sudoku has not been solved correctly. Please ensure the board was input correctly") #this should NEVER happen if the logic algorithms are correct
 
 time.sleep(2)
 puzzle_inputter = Puzzle_Inputter()
-#puzzle_inputter.input_solution(board) #comment out this line if you don't want the answers to be inputted automatically
+#puzzle_inputter.input_solution(board) #comment out this line if you don't want the answers to be input automatically

@@ -139,17 +139,21 @@ class Puzzle_Loader:
         for image_row in cell_images:
             row = []
             for image in image_row:
+                #cv2.imshow("image", image)
+                #cv2.waitKey(0)
                 count+=1
                 pre_processed = self.pre_process(image)
                 #cv2.imshow("pre_processed", pre_processed)
                 #cv2.waitKey(0)
-                cell = pytesseract.image_to_string(pre_processed, lang='osd', config="-c tessedit_char_whitelist=0123456789 --psm 10")
+
+                cell = pytesseract.image_to_string(pre_processed, lang='osd', config="-c tessedit_char_whitelist=123456789 --psm 10")
                 if (len(cell) == 0):
                     row.append(0)
                 else:
                     value = int(cell.strip())
                 
                     #this is my current, SUPER non-elegant solution to the OCR incorrectly detecting a 1 as a 7, will fix OCR Later
+                    #this is the only thing needing to be fixed
                     if (value == 7):
                         cv2.imshow("Clarification Needed", pre_processed)
                         cv2.waitKey(0)
